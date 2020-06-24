@@ -1,0 +1,6 @@
+{
+  "mongoURI": "mongodb+srv://hoops_admin:WashBinApple01@socialdev-zzvbe.mongodb.net/<dbname>?retryWrites=true&w=majority",
+  "jwtSecret": "mysecrettoken",
+  "githubClientId": "4e83703afe6bb5693712",
+  "githubClientSecret": "51b1061ee21acc0e3d8df46f1b6b5d1180a223c1"
+}
