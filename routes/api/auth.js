@@ -16,7 +16,7 @@ router.get("/", auth, async (req, res) => {
     const user = await User.findById(req.user.id).select("-password");
     res.json(user);
   } catch (err) {
-    console.error(err.message);
+    console.error(err.msg);
     res.status(500).send("Server Error");
   }
 });
@@ -43,7 +43,7 @@ router.post(
       if (!user) {
         return res
           .status(400)
-          .json({ error: [{ message: "Invalid credentials" }] });
+          .json({ errors: [{ msg: "Invalid credentials" }] });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
@@ -51,7 +51,7 @@ router.post(
       if (!isMatch) {
         return res
           .status(400)
-          .json({ error: [{ message: "Invalid credentials" }] });
+          .json({ errors: [{ msg: "Invalid credentials" }] });
       }
 
       //return JSON webtoken
@@ -73,7 +73,7 @@ router.post(
         }
       );
     } catch (err) {
-      console.error(err.message);
+      console.error(err.msg);
       res.send(500).send("Server error");
     }
   }

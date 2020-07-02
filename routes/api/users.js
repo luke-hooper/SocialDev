@@ -37,7 +37,7 @@ router.post(
       if (user) {
         return res
           .status(400)
-          .json({ error: [{ message: "User already exists" }] });
+          .json({ errors: [{ msg: "User already exists" }] });
       }
 
       //-> Get users gravatar
@@ -75,7 +75,7 @@ router.post(
         }
       );
     } catch (err) {
-      console.error(err.message);
+      console.error(err.msg);
       res.send(500).send("Server error");
     }
   }

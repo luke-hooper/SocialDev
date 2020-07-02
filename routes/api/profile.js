@@ -18,13 +18,11 @@ router.get("/me", auth, async (req, res) => {
     }).populate("user", ["name", "avatar"]);
 
     if (!profile) {
-      return res
-        .status(400)
-        .json({ message: "There is no profile for this user" });
+      return res.status(400).json({ msg: "There is no profile for this user" });
     }
     res.json(profile);
   } catch (err) {
-    console.error(err.message);
+    console.error(err.msg);
     res.status(500).send("Server Error");
   }
 });
@@ -48,9 +46,8 @@ router.post(
   ],
   async (req, res) => {
     const errors = validationResult(req);
-    //Check for errors in body
     if (!errors.isEmpty()) {
-      return res.status(400).send({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array() });
     }
     //destructuring / get everything out of the body
     const {
@@ -88,30 +85,17 @@ router.post(
     if (linkedin) profileFields.social.linkedin = linkedin;
 
     try {
-      // Look for a profile with the user id sent in
-      let profile = await Profile.findOne({ user: req.user.id });
-      // If we do find a profile with the id then we update it
-      if (profile) {
-        //update
-        profile = await Profile.findOneAndUpdate(
-          { user: req.user.id },
-          { $set: profileFields },
-          { new: true }
-        );
-        return res.json(profile);
-      }
-
-      // If we do not find a profile for the user we create a profile
-      profile = new Profile(profileFields);
-      await profile.save();
-      return res.json(profile);
+      // Using upsert option (creates new doc if no match is found):
+      let profile = await Profile.findOneAndUpdate(
+        { user: req.user.id },
+        { $set: profileFields },
+        { new: true, upsert: true }
+      );
+      res.json(profile);
     } catch (err) {
-      console.error(err.message);
+      console.error(err.msg);
       res.status(500).send("Server Error");
     }
-
-    console.log(profileFields.skills);
-    res.send("hello");
   }
 );
 
@@ -123,7 +107,7 @@ router.get("/", async (req, res) => {
     profiles = await Profile.find().populate("user", ["name", "avatar"]);
     res.json(profiles);
   } catch (err) {
-    console.error(err.message);
+    console.error(err.msg);
     res.status(500).send("Server Error");
   }
 });
@@ -138,13 +122,13 @@ router.get("/user/:user_id", async (req, res) => {
     }).populate("user", ["name", "avatar"]);
 
     if (!profile) {
-      return res.status(400).json({ message: "Profile not found" });
+      return res.status(400).json({ msg: "Profile not found" });
     }
     res.json(profile);
   } catch (err) {
-    console.error(err.message);
+    console.error(err.msg);
     if (err.kind == "ObjectId") {
-      return res.status(400).json({ message: "Profile not found" });
+      return res.status(400).json({ msg: "Profile not found" });
     }
     res.status(500).send("Server Error");
   }
@@ -160,9 +144,9 @@ router.delete("/", auth, async (req, res) => {
     //Remove the user
     await User.findOneAndRemove({ _id: req.user.id });
     // TO DO REMOVE USER"S POST
-    res.json({ message: "User has been deleted" });
+    res.json({ msg: "User has been deleted" });
   } catch (err) {
-    console.error(err.message);
+    console.error(err.msg);
     res.status(500).send("Server Error");
   }
 });
@@ -175,7 +159,7 @@ router.get("/", async (req, res) => {
     profiles = await Profile.find().populate("user", ["name", "avatar"]);
     res.json(profiles);
   } catch (err) {
-    console.error(err.message);
+    console.error(err.msg);
     res.status(500).send("Server Error");
   }
 });
@@ -234,7 +218,7 @@ router.put(
       res.json(profile);
       await profile.save();
     } catch (err) {
-      console.error(err.message);
+      console.error(err.msg);
       res.status(500).send("Server Error");
     }
   }
@@ -260,7 +244,7 @@ router.delete("/experience/:exp_id", auth, async (req, res) => {
 
     res.json(profile);
   } catch (err) {
-    console.error(err.message);
+    console.error(err.msg);
     res.status(500).send("Server Error");
   }
 });
@@ -322,7 +306,7 @@ router.put(
       res.json(profile);
       await profile.save();
     } catch (err) {
-      console.error(err.message);
+      console.error(err.msg);
       res.status(500).send("Server Error");
     }
   }
@@ -346,7 +330,7 @@ router.delete("/education/:edu_id", auth, async (req, res) => {
 
     res.json(profile);
   } catch (err) {
-    console.error(err.message);
+    console.error(err.msg);
     res.status(500).send("Server Error");
   }
 });
@@ -371,13 +355,13 @@ router.get("/github/:username", async (req, res) => {
       if (error) console.error(error);
       //If we have a good request but no profile found
       if (response.statusCode !== 200) {
-        return res.status(404).json({ message: "No Github profile found" });
+        return res.status(404).json({ msg: "No Github profile found" });
       }
       // If we have a good request and profile is found send the body of response
       res.json(JSON.parse(body));
     });
   } catch (err) {
-    console.error(err.message);
+    console.error(err.msg);
     res.status(500).send("Server Error");
   }
 });
