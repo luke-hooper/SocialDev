@@ -7,7 +7,6 @@ import Experience from "./Experience";
 import Education from "./Education";
 import Spinner from "../layout/Spinner";
 import { getCurrentProfile, deleteAccount } from "../../actions/profile";
-import { pathToFileURL } from "url";
 
 const Dashboard = ({
   getCurrentProfile,
@@ -18,6 +17,7 @@ const Dashboard = ({
   useEffect(() => {
     getCurrentProfile();
   }, [getCurrentProfile]);
+
   return loading && profile === null ? (
     <Spinner />
   ) : (

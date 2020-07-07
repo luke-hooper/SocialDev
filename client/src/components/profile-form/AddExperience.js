@@ -1,10 +1,10 @@
 import React, { Fragment, useState } from "react";
-import { Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import {  addExperience } from "../../actions/profile";
+import { addExperience } from "../../actions/profile";
 
-const AddExperience = ({addExperience, history}) => {
+const AddExperience = ({ addExperience, history }) => {
   const [formData, setFormData] = useState({
     company: "",
     title: "",
@@ -14,7 +14,7 @@ const AddExperience = ({addExperience, history}) => {
     current: false,
     description: ""
   });
-  const [toDateDisabled, toggleDissabled] = useState(false);
+  //const [toDateDisabled, toggleDissabled] = useState(false);
 
   const { company, title, location, from, to, current, description } = formData;
 
@@ -29,31 +29,69 @@ const AddExperience = ({addExperience, history}) => {
         positions that you have had in the past
       </p>
       <small>* = required field</small>
-      <form className='form' onSubmit={e=>{
+      <form
+        className='form'
+        onSubmit={e => {
           e.preventDefault();
-          addExperience(formData, history)
-      }}>
+          addExperience(formData, history);
+        }}
+      >
         <div className='form-group'>
-          <input type='text' placeholder='* Job Title' name='title' value={title} onChange={onChange} required />
+          <input
+            type='text'
+            placeholder='* Job Title'
+            name='title'
+            value={title}
+            onChange={onChange}
+            required
+          />
         </div>
         <div className='form-group'>
-          <input type='text' placeholder='* Company' name='company' value={company} onChange={onChange} required />
+          <input
+            type='text'
+            placeholder='* Company'
+            name='company'
+            value={company}
+            onChange={onChange}
+            required
+          />
         </div>
         <div className='form-group'>
-          <input type='text' placeholder='Location' name='location' value={location} onChange={onChange} />
+          <input
+            type='text'
+            placeholder='Location'
+            name='location'
+            value={location}
+            onChange={onChange}
+          />
         </div>
         <div className='form-group'>
           <h4>From Date</h4>
-          <input type='date' name='from' value={from} onChange={onChange}/>
+          <input type='date' name='from' value={from} onChange={onChange} />
         </div>
         <div className='form-group'>
           <p>
-            <input type='checkbox' name='current' checked={current} value={current} onChange={()=>{setFormData({...formData, current: !current})}} />{' '} Current Job
+            <input
+              type='checkbox'
+              name='current'
+              checked={current}
+              value={current}
+              onChange={() => {
+                setFormData({ ...formData, current: !current });
+              }}
+            />{" "}
+            Current Job
           </p>
         </div>
         <div className='form-group'>
           <h4>To Date</h4>
-          <input type='date' name='to' value={to} onChange={onChange} disabled={current}/>
+          <input
+            type='date'
+            name='to'
+            value={to}
+            onChange={onChange}
+            disabled={current}
+          />
         </div>
         <div className='form-group'>
           <textarea
@@ -61,7 +99,8 @@ const AddExperience = ({addExperience, history}) => {
             cols='30'
             rows='5'
             placeholder='Job Description'
-            value={description} onChange={onChange}
+            value={description}
+            onChange={onChange}
           ></textarea>
         </div>
         <input type='submit' className='btn btn-primary my-1' />
@@ -77,5 +116,4 @@ AddExperience.propTypes = {
   addExperience: PropTypes.func.isRequired
 };
 
-export default connect(null, { addExperience })(AddExperience);
-
+export default connect(null, { addExperience })(withRouter(AddExperience));
