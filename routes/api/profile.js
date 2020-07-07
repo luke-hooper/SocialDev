@@ -6,6 +6,7 @@ const auth = require("../../middleware/auth");
 const { check, validationResult } = require("express-validator");
 
 const Profile = require("../../models/Profile");
+const Post = require("../../models/Post");
 const User = require("../../models/User");
 
 // @route   GET api/profile/me
@@ -85,12 +86,22 @@ router.post(
     if (linkedin) profileFields.social.linkedin = linkedin;
 
     try {
-      // Using upsert option (creates new doc if no match is found):
-      let profile = await Profile.findOneAndUpdate(
-        { user: req.user.id },
-        { $set: profileFields },
-        { new: true, upsert: true }
-      );
+      // Look for a profile with the user id sent in
+      let profile = await Profile.findOne({ user: req.user.id });
+      // If we do find a profile with the id then we update it
+      if (profile) {
+        //update
+        profile = await Profile.findOneAndUpdate(
+          { user: req.user.id },
+          { $set: profileFields },
+          { new: true }
+        );
+        return res.json(profile);
+      }
+
+      // If we do not find a profile for the user we create a profile
+      profile = new Profile(profileFields);
+      await profile.save();
       res.json(profile);
     } catch (err) {
       console.error(err.msg);
@@ -139,11 +150,13 @@ router.get("/user/:user_id", async (req, res) => {
 // @access   Private
 router.delete("/", auth, async (req, res) => {
   try {
+    // REMOVE USERS POST
+    await Post.deleteMany({ user: req.user.id });
     // Remove profile
     await Profile.findOneAndRemove({ user: req.user.id });
     //Remove the user
     await User.findOneAndRemove({ _id: req.user.id });
-    // TO DO REMOVE USER"S POST
+
     res.json({ msg: "User has been deleted" });
   } catch (err) {
     console.error(err.msg);
