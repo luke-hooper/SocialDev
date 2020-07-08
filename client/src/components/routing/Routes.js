@@ -13,7 +13,7 @@ import PrivateRoute from "../routing/PrivateRoute";
 import Profiles from "../profiles/Profiles";
 import Profile from "../profile/Profile";
 import Posts from "../posts/Posts";
-import Post from "../layout/NotFound";
+import Post from "../post/Post";
 import NotFound from "../layout/NotFound";
 
 const Routes = () => {
